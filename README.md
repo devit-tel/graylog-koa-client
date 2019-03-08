@@ -43,3 +43,9 @@ app
 
 app.listen(3000);
 ```
+
+# Query Log on Greylog
+Use following query
+```
+SERVICE:your-service-api
+```
