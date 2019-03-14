@@ -12,7 +12,40 @@ const CONFIG = {
     SERVICE: process.env.LOGGING_SERVICE,
     NODE_ENV: process.env.NODE_ENV,
 }
-
+const setConfig = ({
+    host, port, service, env
+}) => {
+    gelfPro.setConfig({
+        fields: {
+            SERVICE: service,
+            NODE_ENV: env,
+        }, // optional; default fields for all messages
+        filter: [], // optional; filters to discard a message
+        transform: [], // optional; transformers for a message
+        broadcast: [], // optional; listeners of a message
+        levels: {}, // optional; default: see the levels section below
+        aliases: {}, // optional; default: see the aliases section below
+        adapterName: 'tcp', // optional; currently supported "udp", "tcp" and "tcp-tls"; default: udp
+        adapterOptions: { // this object is passed to the adapter.connect() method
+            // common
+            host: host, // optional; default: 127.0.0.1
+            port: port, // optional; default: 12201
+            // ... and so on
+    
+            // tcp adapter example
+            family: 4, // tcp only; optional; version of IP stack; default: 4
+            timeout: 1000, // tcp only; optional; default: 10000 (10 sec)
+    
+            // udp adapter example
+            protocol: 'udp4' // udp only; optional; udp adapter: udp4, udp6; default: udp4
+    
+            // tcp-tls adapter example
+            //   key: fs.readFileSync('client-key.pem'), // tcp-tls only; optional; only if using the client certificate authentication
+            //   cert: fs.readFileSync('client-cert.pem'), // tcp-tls only; optional; only if using the client certificate authentication
+            //   ca: [fs.readFileSync('server-cert.pem')] // tcp-tls only; optional; only for the self-signed certificate
+        }
+    })    
+}
 gelfPro.setConfig({
     fields: {
         SERVICE: CONFIG.SERVICE,
@@ -151,5 +184,6 @@ module.exports = {
     notice: logger.notice,
     info: logger.info,
     debug: logger.debug,
-    middleware: middleware
+    middleware: middleware,
+    config: setConfig,
 }
