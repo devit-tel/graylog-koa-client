@@ -6,12 +6,6 @@ require('winston-graylog2')
 var gelfPro = require('gelf-pro')
 var _ = require('lodash')
 
-const CONFIG = {
-    HOST: process.env.LOGGING_HOST,
-    PORT: process.env.LOGGING_PORT,
-    SERVICE: process.env.LOGGING_SERVICE,
-    NODE_ENV: process.env.NODE_ENV,
-}
 const setConfig = ({
     host, port, service, env
 }) => {
@@ -44,7 +38,15 @@ const setConfig = ({
             //   cert: fs.readFileSync('client-cert.pem'), // tcp-tls only; optional; only if using the client certificate authentication
             //   ca: [fs.readFileSync('server-cert.pem')] // tcp-tls only; optional; only for the self-signed certificate
         }
-    })    
+    })
+    if (_.includes(['development', 'dev', '', undefined], env)) {
+        logger.add(winston.transports.Console, {
+            json: true
+        })
+    }
+    if (_.includes(['staging', 'production'], env)) {
+        logger.add(winston.transports.Graylog2, {})
+    }    
 }
 
 var levelsMapping = {
@@ -91,14 +93,7 @@ Graylog2.prototype.log = function (level, msg, meta, callback) {
 }
 
 var logger = new (winston.Logger)({})
-if (_.includes(['development', 'dev', '', undefined], CONFIG.NODE_ENV)) {
-    logger.add(winston.transports.Console, {
-        json: true
-    })
-}
-if (_.includes(['staging', 'production'], CONFIG.NODE_ENV)) {
-    logger.add(winston.transports.Graylog2, {})
-}
+
 var middleware = async (ctx, next) => {
     const start = new Date()
     ctx.logging = {}
@@ -154,6 +149,6 @@ module.exports = {
     notice: logger.notice,
     info: logger.info,
     debug: logger.debug,
-    middleware: middleware,
-    config: setConfig,
+    loggingMiddleware: middleware,
+    configLogger: setConfig,
 }

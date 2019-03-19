@@ -11,7 +11,14 @@ NODE_ENV=staging
 ```javascript
 var Koa = require('koa');
 var Router = require('koa-router');
-var {middleware, info, error} = require('..')
+var {loggingMiddleware, info, error, configLogger} = require('graylog-koa-config')
+
+configLogger({
+  host: 'your graylog host',
+  port: 12201,
+  service: 'your service name', // It will become filed `SERVICE` in Graylog
+  env: process.env.NODE_ENV
+})
 
 var app = new Koa();
 var router = new Router();
@@ -37,7 +44,7 @@ router.get('/error', (ctx, next) => {
   });
 
 app
-  .use(middleware) // add logging middleware to support ctx.logging
+  .use(loggingMiddleware) // add logging middleware to support ctx.logging
   .use(router.routes())
   .use(router.allowedMethods());
 

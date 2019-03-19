@@ -1,10 +1,17 @@
 require('dotenv').config()
 var Koa = require('koa');
 var Router = require('koa-router');
-var {middleware, info, error} = require('..')
+var {loggingMiddleware, info, error, configLogger} = require('..')
 
 var app = new Koa();
 var router = new Router();
+
+configLogger({
+  host: 'your graylog host',
+  port: 12201,
+  service: 'your service',
+  env: process.env.NODE_ENV
+})
 
 router.get('/', (ctx, next) => {
   ctx.logging.start = 1
@@ -27,7 +34,7 @@ router.get('/error', (ctx, next) => {
   });
 
 app
-  .use(middleware)
+  .use(loggingMiddleware)
   .use(router.routes())
   .use(router.allowedMethods());
 
