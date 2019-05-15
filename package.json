@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nantaphop Phuengphae <nantaphop.p@gmail.com> (https://nantaphop.github.io)",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "gelf-pro": "^1.3.0",
     "lodash": "^4.17.11",
